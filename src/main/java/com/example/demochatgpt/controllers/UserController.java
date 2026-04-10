@@ -1,11 +1,13 @@
 package com.example.demochatgpt.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demochatgpt.models.User;
 import com.example.demochatgpt.services.UserService;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,27 +35,29 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ResponseEntity<List<User>> getUsers() {
+        return ResponseEntity.ok(userService.getUsers());
     }
 
     @GetMapping("/user/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
     
     
     @PostMapping("/user")
-    public User postMethodName(@RequestBody User user) {
+    public ResponseEntity<Void> postMethodName(@RequestBody User user) {
+        var res = userService.createUser(user.getEmail(), user.getPassword());
 
-        return userService.createUser(user.getEmail(), user.getPassword());
+         URI location = URI.create("/usuarios/" + res.getId());
+        return ResponseEntity.created(location).build();
     }
 
     @DeleteMapping("/user/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
 
-        return "OK!";
+        return ResponseEntity.noContent().build();
     }
     
 }
