@@ -13,6 +13,9 @@ public class User {
     @Getter @Setter
     private long id;
 
+    @Column(name = "name", nullable = true, length = 30)
+    @Getter @Setter
+    private String name;
 
     @Column(name = "email", nullable = false, unique = true, length = 100)
     @Email(message = "Email not valid")
