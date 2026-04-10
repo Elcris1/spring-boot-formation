@@ -2,6 +2,12 @@ package com.example.demochatgpt.services;
 
 import java.util.List;
 
+import com.example.demochatgpt.dto.UserCreateRequestDTO;
+import com.example.demochatgpt.dto.UserResponseDTO;
+import com.example.demochatgpt.exceptions.InvalidFieldsException;
+import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
+import com.example.demochatgpt.mapper.UserMapper;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 
 import com.example.demochatgpt.exceptions.UserNotFoundException;
@@ -11,30 +17,36 @@ import com.example.demochatgpt.repositories.UserRepository;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     //private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    public List<User> getUsers() {
-        return  userRepository.findAll();
+    public List<UserResponseDTO> getUsers() {
+        return  userMapper.toDtoList(userRepository.findAll());
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-            .orElseThrow( () -> new UserNotFoundException());
+    public UserResponseDTO getUserById(Long id) {
+        return userMapper.toDto(userRepository.findById(id)
+            .orElseThrow( () -> new UserNotFoundException()));
         
     }
 
-    public User createUser(String email, String password ) {
-        if (!userRepository.findByEmail(email).isEmpty()) {
-            throw new RuntimeException("User with this email already exists");
+    public User createUser(UserCreateRequestDTO rq) {
+        if (userRepository.findByEmail(rq.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException();
         }
         User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
-        return userRepository.save(user);
+        try {
+            user.setEmail(rq.getEmail());
+            user.setPassword(rq.getPassword());
+            return userRepository.save(user);
+        }   catch (ConstraintViolationException ex) {
+            throw new InvalidFieldsException("User fields are not valid");
+        }
     }
 
     public void deleteUser(Long id) {

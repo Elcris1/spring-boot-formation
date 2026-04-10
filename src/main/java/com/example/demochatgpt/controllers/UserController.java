@@ -1,5 +1,7 @@
 package com.example.demochatgpt.controllers;
 
+import com.example.demochatgpt.dto.UserCreateRequestDTO;
+import com.example.demochatgpt.dto.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,19 +37,19 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
     
     
     @PostMapping("/user")
-    public ResponseEntity<Void> postMethodName(@RequestBody User user) {
-        var res = userService.createUser(user.getEmail(), user.getPassword());
+    public ResponseEntity<Void> postMethodName(@RequestBody UserCreateRequestDTO user) {
+        var res = userService.createUser(user);
 
          URI location = URI.create("/usuarios/" + res.getId());
         return ResponseEntity.created(location).build();
