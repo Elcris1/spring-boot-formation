@@ -3,21 +3,13 @@ package com.example.demochatgpt.controllers;
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demochatgpt.models.User;
 import com.example.demochatgpt.services.UserService;
 
 import java.net.URI;
 import java.util.List;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 
 @RestController
@@ -37,12 +29,22 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<UserResponseDTO>> getUsers() {
+    public ResponseEntity<List<?>> getUsers(
+            @RequestParam(defaultValue = "false") boolean detailed
+    ) {
+        if (detailed) {
+            return ResponseEntity.ok(userService.getDetailedUsers());
+        }
         return ResponseEntity.ok(userService.getUsers());
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<?> getUserById(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean detailed) {
+        if (detailed) {
+            return ResponseEntity.ok(userService.getDetailedUserById(id));
+        }
         return ResponseEntity.ok(userService.getUserById(id));
     }
     

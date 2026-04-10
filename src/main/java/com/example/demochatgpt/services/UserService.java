@@ -2,6 +2,7 @@ package com.example.demochatgpt.services;
 
 import java.util.List;
 
+import com.example.demochatgpt.dto.DetailedUserResponseDTO;
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
@@ -28,11 +29,19 @@ public class UserService {
     public List<UserResponseDTO> getUsers() {
         return  userMapper.toDtoList(userRepository.findAll());
     }
+    public List<DetailedUserResponseDTO> getDetailedUsers() {
+        return userMapper.toDetailedDtoList(userRepository.findAll());
+    }
 
     public UserResponseDTO getUserById(Long id) {
         return userMapper.toDto(userRepository.findById(id)
             .orElseThrow( () -> new UserNotFoundException()));
         
+    }
+
+    public DetailedUserResponseDTO getDetailedUserById(Long id) {
+        return userMapper.toDetailedDto(userRepository.findById(id)
+                .orElseThrow( () -> new UserNotFoundException()));
     }
 
     public User createUser(UserCreateRequestDTO rq) {
