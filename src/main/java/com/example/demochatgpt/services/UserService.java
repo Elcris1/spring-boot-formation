@@ -70,14 +70,14 @@ public class UserService {
     }
 
     //AUTH methods
-    public UserResponseDTO validateUser(UserLoginDTO rq) {
+    public User validateUser(UserLoginDTO rq) {
         var user = userRepository.findByEmail(rq.getEmail());
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
 
         if (user.get().getPassword().equals(rq.getPassword())) {
-            return userMapper.toDto(user.get());
+            return user.get();
         }
 
         throw new BadCredentialsException("Credentials not valid");

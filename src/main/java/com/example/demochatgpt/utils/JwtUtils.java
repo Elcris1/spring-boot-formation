@@ -1,4 +1,5 @@
 package com.example.demochatgpt.utils;
+import com.example.demochatgpt.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -27,9 +28,9 @@ public class JwtUtils {
         this.key = Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(User user) {
         return Jwts.builder()
-                .subject(username)
+                .subject(user.getEmail())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1h
                 .signWith(key)

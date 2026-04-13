@@ -26,7 +26,7 @@ public class AuthController {
     @PostMapping ("/login")
     public ResponseEntity<String> login(@RequestBody UserLoginDTO rq) {
         var user = userService.validateUser(rq);
-        var token = jwtUtils.generateToken(user.getEmail());
+        var token = jwtUtils.generateToken(user);
         return ResponseEntity.ok(token);
     }
 
