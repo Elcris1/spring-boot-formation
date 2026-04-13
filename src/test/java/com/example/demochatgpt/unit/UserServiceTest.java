@@ -41,6 +41,52 @@ public class UserServiceTest {
     UserService userService;
 
     @Test
+    void getUsers_shouldReturnMappedUserList() {
+        // Arrange
+        List<User> users = List.of(new User(), new User());
+
+        List<UserResponseDTO> dtos = List.of(
+                new UserResponseDTO(),
+                new UserResponseDTO()
+        );
+
+        when(userRepository.findAll()).thenReturn(users);
+        when(userMapper.toDtoList(users)).thenReturn(dtos);
+
+        // Act
+        List<UserResponseDTO> result = userService.getUsers();
+
+        // Assert
+        assertEquals(dtos, result);
+
+        verify(userRepository).findAll();
+        verify(userMapper).toDtoList(users);
+    }
+
+    @Test
+    void getDetailedUsers_shouldReturnMappedDetailedUsers() {
+        // Arrange
+        List<User> users = List.of(new User(), new User());
+
+        List<DetailedUserResponseDTO> dtos = List.of(
+                new DetailedUserResponseDTO(),
+                new DetailedUserResponseDTO()
+        );
+
+        when(userRepository.findAll()).thenReturn(users);
+        when(userMapper.toDetailedDtoList(users)).thenReturn(dtos);
+
+        // Act
+        List<DetailedUserResponseDTO> result = userService.getDetailedUsers();
+
+        // Assert
+        assertEquals(dtos, result);
+
+        verify(userRepository).findAll();
+        verify(userMapper).toDetailedDtoList(users);
+    }
+
+    @Test
     void shouldReturnUserById() {
         // Arrange
         Long id = 1L;
