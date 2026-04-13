@@ -1,7 +1,10 @@
 package com.example.demochatgpt.unit;
 
 import com.example.demochatgpt.dto.DetailedUserResponseDTO;
+import com.example.demochatgpt.dto.UserCreateRequestDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
+import com.example.demochatgpt.exceptions.InvalidFieldsException;
+import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
 import com.example.demochatgpt.exceptions.UserNotFoundException;
 import com.example.demochatgpt.mapper.UserMapper;
 import com.example.demochatgpt.models.Role;
@@ -9,6 +12,7 @@ import com.example.demochatgpt.models.User;
 import com.example.demochatgpt.repositories.UserRepository;
 import com.example.demochatgpt.services.RoleService;
 import com.example.demochatgpt.services.UserService;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -156,5 +160,85 @@ public class UserServiceTest {
 
         verify(userRepository).findByEmail(email);
     }
+
+    @Test
+    void createUserShouldCreateUserSuccessfully() {
+
+        // Arrange
+        UserCreateRequestDTO rq = new UserCreateRequestDTO();
+        rq.setEmail("test@test.com");
+        rq.setPassword("1234");
+
+        Role role = new Role();
+        role.setName("USER");
+
+        User savedUser = new User();
+        savedUser.setEmail("test@test.com");
+
+        when(userRepository.findByEmail("test@test.com"))
+                .thenReturn(Optional.empty());
+
+        when(roleService.getRoleByName("USER"))
+                .thenReturn(role);
+
+        when(userRepository.save(any(User.class)))
+                .thenReturn(savedUser);
+
+        // Act
+        User result = userService.createUser(rq);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("test@test.com", result.getEmail());
+        assertEquals(savedUser, result);
+
+
+        verify(userRepository).findByEmail("test@test.com");
+        verify(roleService).getRoleByName("USER");
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void createUserShouldThrowExceptionWhenEmailAlreadyExists() {
+
+        // Arrange
+        UserCreateRequestDTO rq = new UserCreateRequestDTO();
+        rq.setEmail("test@test.com");
+
+        when(userRepository.findByEmail("test@test.com"))
+                .thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(UserAlreadyExistsException.class,
+                () -> userService.createUser(rq));
+
+        verify(userRepository).findByEmail("test@test.com");
+        verifyNoInteractions(roleService);
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void createUserShouldThrowInvalidFieldsExceptionWhenConstraintViolationOccurs() {
+
+        // Arrange
+        UserCreateRequestDTO rq = new UserCreateRequestDTO();
+        rq.setEmail("test@test.com");
+        rq.setPassword("1234");
+
+        when(userRepository.findByEmail("test@test.com"))
+                .thenReturn(Optional.empty());
+
+        when(roleService.getRoleByName("USER"))
+                .thenThrow(new ConstraintViolationException(null));
+
+        // Act & Assert
+        assertThrows(InvalidFieldsException.class,
+                () -> userService.createUser(rq));
+
+        verify(userRepository).findByEmail("test@test.com");
+        verify(roleService).getRoleByName("USER");
+    }
+
+
 
 }
