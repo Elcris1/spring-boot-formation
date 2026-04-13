@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.demochatgpt.dto.DetailedUserResponseDTO;
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
+import com.example.demochatgpt.dto.UserLoginDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
@@ -26,6 +27,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
+    //Rest METHODS
     public List<UserResponseDTO> getUsers() {
         return  userMapper.toDtoList(userRepository.findAll());
     }
@@ -65,4 +67,17 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    //AUTH methods
+    public UserResponseDTO validateUser(UserLoginDTO rq) {
+        var user = userRepository.findByEmail(rq.getEmail());
+        if(user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        if (user.get().getPassword().equals(rq.getPassword())) {
+            return userMapper.toDto(user.get());
+        }
+
+        throw new RuntimeException();
+    }
 }
