@@ -2,6 +2,7 @@ package com.example.demochatgpt.controllers;
 
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
 
     private final UserService userService;
