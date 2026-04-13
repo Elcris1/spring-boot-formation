@@ -6,6 +6,7 @@ import com.example.demochatgpt.dto.DetailedUserResponseDTO;
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
 import com.example.demochatgpt.dto.UserLoginDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
+import com.example.demochatgpt.exceptions.CredentialsNotValidException;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
 import com.example.demochatgpt.mapper.UserMapper;
@@ -78,6 +79,6 @@ public class UserService {
             return userMapper.toDto(user.get());
         }
 
-        throw new RuntimeException();
+        throw new CredentialsNotValidException();
     }
 }
