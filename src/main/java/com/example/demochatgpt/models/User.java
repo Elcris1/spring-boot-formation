@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -35,4 +37,6 @@ public class User {
         createdAt = System.currentTimeMillis();
     }
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
 }
