@@ -11,6 +11,7 @@ import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
 import com.example.demochatgpt.mapper.UserMapper;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import com.example.demochatgpt.exceptions.UserNotFoundException;
@@ -79,6 +80,6 @@ public class UserService {
             return userMapper.toDto(user.get());
         }
 
-        throw new CredentialsNotValidException();
+        throw new BadCredentialsException("Credentials not valid");
     }
 }

@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
     private final JwtUtils jwtUtils;
     private final UserService userService;
@@ -26,5 +28,13 @@ public class AuthController {
         var user = userService.validateUser(rq);
         var token = jwtUtils.generateToken(user.getEmail());
         return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Void> registerUser(@RequestBody UserCreateRequestDTO user) {
+        var res = userService.createUser(user);
+
+        URI location = URI.create("/usuarios/" + res.getId());
+        return ResponseEntity.created(location).build();
     }
 }
