@@ -47,15 +47,7 @@ public class UserController {
         }
         return ResponseEntity.ok(userService.getUserById(id));
     }
-    
-    
-    @PostMapping("/user")
-    public ResponseEntity<Void> postMethodName(@RequestBody UserCreateRequestDTO user) {
-        var res = userService.createUser(user);
 
-         URI location = URI.create("/usuarios/" + res.getId());
-        return ResponseEntity.created(location).build();
-    }
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
