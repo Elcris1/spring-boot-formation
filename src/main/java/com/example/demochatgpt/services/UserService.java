@@ -78,13 +78,10 @@ public class UserService {
 
     //AUTH methods
     public User validateUser(UserLoginDTO rq) {
-        var user = userRepository.findByEmail(rq.getEmail());
-        if(user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
+        var user = userRepository.findByEmail(rq.getEmail()).orElseThrow(UserNotFoundException::new);
 
-        if (user.get().getPassword().equals(rq.getPassword())) {
-            return user.get();
+        if (user.getPassword().equals(rq.getPassword())) {
+            return user;
         }
 
         throw new BadCredentialsException("Credentials not valid");
@@ -92,17 +89,15 @@ public class UserService {
 
     //ROle things
     public void addRoles(Long id, AddRolesRequestDTO roles) {
-        var user = userRepository.findById(id);
-        if(user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        var userRoles = user.get().getRoles();
+        var user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        var userRoles = user.getRoles();
         roles.getRoles().forEach( (roleName) -> {
                     var role = roleService.getRoleByName(roleName);
                     userRoles.add(role);
                 }
         );
-        user.get().setRoles(userRoles);
-        userRepository.save(user.get());
+        user.setRoles(userRoles);
+        userRepository.save(user);
     }
 }

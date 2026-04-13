@@ -3,7 +3,6 @@ package com.example.demochatgpt.controllers;
 import com.example.demochatgpt.models.Role;
 import com.example.demochatgpt.services.RoleService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +20,7 @@ public class RoleController {
     }
 
     @PostMapping("")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> createRole(
             @RequestBody Role role ) {
         var newRole = this.roleService.createRole(role);
