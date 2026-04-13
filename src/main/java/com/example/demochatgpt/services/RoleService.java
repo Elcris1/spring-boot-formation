@@ -1,6 +1,7 @@
 package com.example.demochatgpt.services;
 
 import com.example.demochatgpt.exceptions.RoleAlreadyExistsException;
+import com.example.demochatgpt.exceptions.RoleNotFoundException;
 import com.example.demochatgpt.models.Role;
 import com.example.demochatgpt.repositories.RoleRepository;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class RoleService {
     }
 
     public Role getRoleByName(String name) {
-        return this.roleRepository.findRoleByName(name).orElseThrow(RuntimeException::new);
+        return this.roleRepository.findRoleByName(name).orElseThrow(RoleNotFoundException::new);
     }
 
     public Role createRole(Role role){

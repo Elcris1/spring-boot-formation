@@ -92,4 +92,19 @@ public class UserService {
 
         throw new BadCredentialsException("Credentials not valid");
     }
+
+    //ROle things
+    public void addRole(Long id, String roleName) {
+        var user = userRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        var role = roleService.getRoleByName(roleName);
+
+        var userRoles = user.get().getRoles();
+        userRoles.add(role);
+        user.get().setRoles(userRoles);
+        userRepository.save(user.get());
+    }
 }

@@ -41,7 +41,8 @@ public class UserController {
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "false") boolean detailed) {
+            @RequestParam(defaultValue = "false") boolean detailed
+    ) {
         if (detailed) {
             return ResponseEntity.ok(userService.getDetailedUserById(id));
         }
@@ -54,6 +55,15 @@ public class UserController {
         userService.deleteUser(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/user/{id}")
+    public ResponseEntity<Void> addRole(
+            @PathVariable Long id,
+            @RequestParam String roleName
+    ) {
+        userService.addRole(id, roleName);
+        return ResponseEntity.ok().build();
     }
     
 }
