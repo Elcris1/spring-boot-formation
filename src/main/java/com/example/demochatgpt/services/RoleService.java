@@ -1,8 +1,11 @@
 package com.example.demochatgpt.services;
 
+import com.example.demochatgpt.exceptions.RoleAlreadyExistsException;
 import com.example.demochatgpt.models.Role;
 import com.example.demochatgpt.repositories.RoleRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RoleService {
@@ -17,13 +20,17 @@ public class RoleService {
         return this.roleRepository.findRoleByName(name).orElseThrow(RuntimeException::new);
     }
 
-    public Role createRole(String roleName){
-        if (this.roleRepository.findRoleByName(roleName).isPresent()) {
-            throw new RuntimeException("Role already exits");
+    public Role createRole(Role role){
+        if (this.roleRepository.findRoleByName(role.getName()).isPresent()) {
+            throw new RoleAlreadyExistsException();
         }
+        Role newRole = new Role();
+        newRole.setName(role.getName());
+        roleRepository.save(newRole);
+        return newRole;
+    }
 
-        Role role = new Role();
-        role.setName(roleName);
-        return role;
+    public List<Role> getRoles() {
+        return this.roleRepository.findAll();
     }
 }
