@@ -1,9 +1,6 @@
 package com.example.demochatgpt.unit;
 
-import com.example.demochatgpt.dto.DetailedUserResponseDTO;
-import com.example.demochatgpt.dto.UserCreateRequestDTO;
-import com.example.demochatgpt.dto.UserLoginDTO;
-import com.example.demochatgpt.dto.UserResponseDTO;
+import com.example.demochatgpt.dto.*;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
 import com.example.demochatgpt.exceptions.UserNotFoundException;
@@ -21,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -328,6 +327,86 @@ public class UserServiceTest {
         // Act + Assert
         assertThrows(BadCredentialsException.class,
                 () -> userService.validateUser(dto));
+    }
+
+    @Test
+    void addRoles_shouldThrowUserNotFoundException_whenUserDoesNotExist() {
+        // Arrange
+        Long userId = 1L;
+
+        AddRolesRequestDTO dto = new AddRolesRequestDTO();
+        dto.setRoles(List.of("ADMIN", "USER"));
+
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(UserNotFoundException.class,
+                () -> userService.addRoles(userId, dto));
+    }
+
+    @Test
+    void addRoles_shouldAddRoles_andSaveUser_whenUserExists() {
+        // Arrange
+        Long userId = 1L;
+
+        AddRolesRequestDTO dto = new AddRolesRequestDTO();
+        dto.setRoles(List.of("ADMIN", "USER"));
+
+        User user = new User();
+        user.setId(userId);
+        user.setRoles(new HashSet<>());
+
+        Role adminRole = new Role();
+        adminRole.setName("ADMIN");
+
+        Role userRole = new Role();
+        userRole.setName("USER");
+
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        when(roleService.getRoleByName("ADMIN"))
+                .thenReturn(adminRole);
+
+        when(roleService.getRoleByName("USER"))
+                .thenReturn(userRole);
+
+        // Act
+        userService.addRoles(userId, dto);
+
+        // Assert
+        assertTrue(user.getRoles().contains(adminRole));
+        assertTrue(user.getRoles().contains(userRole));
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void addRoles_shouldCallRoleServiceForEachRole() {
+        // Arrange
+        Long userId = 1L;
+
+        AddRolesRequestDTO dto = new AddRolesRequestDTO();
+        dto.setRoles(List.of("ADMIN"));
+
+        User user = new User();
+        user.setRoles(new HashSet<>());
+
+        Role role = new Role();
+
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        when(roleService.getRoleByName("ADMIN"))
+                .thenReturn(role);
+
+        // Act
+        userService.addRoles(userId, dto);
+
+        // Assert
+        verify(roleService).getRoleByName("ADMIN");
+        verify(userRepository).save(user);
     }
 
 
