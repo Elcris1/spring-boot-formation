@@ -239,6 +239,38 @@ public class UserServiceTest {
         verify(roleService).getRoleByName("USER");
     }
 
+    @Test
+    void deleteUserShouldDeleteUserSuccessfully() {
+
+        // Arrange
+        Long id = 1L;
+
+        when(userRepository.existsById(id)).thenReturn(true);
+
+        // Act
+        userService.deleteUser(id);
+
+        // Assert
+        verify(userRepository).existsById(id);
+        verify(userRepository).deleteById(id);
+    }
+
+    @Test
+    void deleteUserShouldThrowUserNotFoundException() {
+
+        // Arrange
+        Long id = 1L;
+
+        when(userRepository.existsById(id)).thenReturn(false);
+
+        // Act
+        assertThrows(UserNotFoundException.class,
+                () -> userService.deleteUser(id));
+
+        // Assert
+        verify(userRepository).existsById(id);
+        verify(userRepository, never()).deleteById(any());
+    }
 
 
 }
