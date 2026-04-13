@@ -1,5 +1,6 @@
 package com.example.demochatgpt.controllers;
 
+import com.example.demochatgpt.dto.AddRolesRequestDTO;
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -62,9 +63,9 @@ public class UserController {
     @PutMapping("/user/{id}")
     public ResponseEntity<Void> addRole(
             @PathVariable Long id,
-            @RequestParam String roleName
+            @RequestBody AddRolesRequestDTO roles
     ) {
-        userService.addRole(id, roleName);
+        userService.addRoles(id, roles);
         return ResponseEntity.ok().build();
     }
     

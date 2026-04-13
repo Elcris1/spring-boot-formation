@@ -3,10 +3,7 @@ package com.example.demochatgpt.services;
 import java.util.List;
 import java.util.Set;
 
-import com.example.demochatgpt.dto.DetailedUserResponseDTO;
-import com.example.demochatgpt.dto.UserCreateRequestDTO;
-import com.example.demochatgpt.dto.UserLoginDTO;
-import com.example.demochatgpt.dto.UserResponseDTO;
+import com.example.demochatgpt.dto.*;
 import com.example.demochatgpt.exceptions.CredentialsNotValidException;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
@@ -94,16 +91,17 @@ public class UserService {
     }
 
     //ROle things
-    public void addRole(Long id, String roleName) {
+    public void addRoles(Long id, AddRolesRequestDTO roles) {
         var user = userRepository.findById(id);
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-
-        var role = roleService.getRoleByName(roleName);
-
         var userRoles = user.get().getRoles();
-        userRoles.add(role);
+        roles.getRoles().forEach( (roleName) -> {
+                    var role = roleService.getRoleByName(roleName);
+                    userRoles.add(role);
+                }
+        );
         user.get().setRoles(userRoles);
         userRepository.save(user.get());
     }
