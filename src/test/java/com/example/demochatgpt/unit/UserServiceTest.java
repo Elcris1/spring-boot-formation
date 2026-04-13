@@ -2,6 +2,7 @@ package com.example.demochatgpt.unit;
 
 import com.example.demochatgpt.dto.DetailedUserResponseDTO;
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
+import com.example.demochatgpt.dto.UserLoginDTO;
 import com.example.demochatgpt.dto.UserResponseDTO;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.Optional;
 import java.util.Set;
@@ -270,6 +272,62 @@ public class UserServiceTest {
         // Assert
         verify(userRepository).existsById(id);
         verify(userRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void validateUser_shouldReturnUser_whenCredentialsAreCorrect() {
+        // Arrange
+        UserLoginDTO dto = new UserLoginDTO();
+        dto.setEmail("test@test.com");
+        dto.setPassword("1234");
+
+        User user = new User();
+        user.setEmail("test@test.com");
+        user.setPassword("1234");
+
+        when(userRepository.findByEmail("test@test.com"))
+                .thenReturn(Optional.of(user));
+
+        // Act
+        User result = userService.validateUser(dto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(user, result);
+    }
+
+    @Test
+    void validateUser_shouldThrowUserNotFoundException_whenUserDoesNotExist() {
+        // Arrange
+        UserLoginDTO dto = new UserLoginDTO();
+        dto.setEmail("notfound@test.com");
+        dto.setPassword("1234");
+
+        when(userRepository.findByEmail("notfound@test.com"))
+                .thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(UserNotFoundException.class,
+                () -> userService.validateUser(dto));
+    }
+
+    @Test
+    void validateUser_shouldThrowBadCredentialsException_whenPasswordIsWrong() {
+        // Arrange
+        UserLoginDTO dto = new UserLoginDTO();
+        dto.setEmail("test@test.com");
+        dto.setPassword("wrong");
+
+        User user = new User();
+        user.setEmail("test@test.com");
+        user.setPassword("correct");
+
+        when(userRepository.findByEmail("test@test.com"))
+                .thenReturn(Optional.of(user));
+
+        // Act + Assert
+        assertThrows(BadCredentialsException.class,
+                () -> userService.validateUser(dto));
     }
 
 
