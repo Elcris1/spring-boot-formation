@@ -87,7 +87,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldReturnUserById() {
+    void getUserById_shouldReturnCorrectUser() {
         // Arrange
         Long id = 1L;
 
@@ -112,7 +112,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenUserNotFound() {
+    void getUserById_shouldThrowUserNotFound_WhenUserNotFound() {
         // Arrange
         Long id = 1L;
 
@@ -127,7 +127,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldReturnDetailedUserById() {
+    void getDetailedUserById_shouldReturnCorrectDetailedUser() {
         // Arrange
         Long id = 1L;
 
@@ -154,7 +154,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenDetailedUserNotFound() {
+    void getDetailedUser_shouldUserNotFound_WhenUserNotFound() {
         // Arrange
         Long id = 1L;
 
@@ -170,7 +170,7 @@ public class UserServiceTest {
 
 
     @Test
-    void shouldReturnUserByEmail() {
+    void getUserByEmail_shouldReturnCorrectUser() {
         // Arrange
         String email = "test@test.com";
         long id = 1L;
@@ -193,7 +193,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenUserByEmailNotFound() {
+    void getUserByEmail_shouldUserNotFound_WhenUserNotFoundByEmail() {
         // Arrange
         String email = "test@test.com";
 
@@ -209,7 +209,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUserShouldCreateUserSuccessfully() {
+    void createUser_shouldCreateUserSuccessfully() {
 
         // Arrange
         UserCreateRequestDTO rq = new UserCreateRequestDTO();
@@ -246,7 +246,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUserShouldThrowExceptionWhenEmailAlreadyExists() {
+    void createUser_shouldThrowUserAlreadyExists_WhenEmailAlreadyExists() {
 
         // Arrange
         UserCreateRequestDTO rq = new UserCreateRequestDTO();
@@ -265,7 +265,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUserShouldThrowInvalidFieldsExceptionWhenConstraintViolationOccurs() {
+    void createUser_shouldThrowInvalidFieldsException_WhenConstraintViolationOccurs() {
 
         // Arrange
         UserCreateRequestDTO rq = new UserCreateRequestDTO();
@@ -287,7 +287,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void deleteUserShouldDeleteUserSuccessfully() {
+    void deleteUser_shouldDeleteUserSuccessfully() {
 
         // Arrange
         Long id = 1L;
@@ -303,7 +303,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void deleteUserShouldThrowUserNotFoundException() {
+    void deleteUser_shouldThrowUserNotFoundException_whenUserDoesntExist() {
 
         // Arrange
         Long id = 1L;
