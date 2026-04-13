@@ -117,4 +117,44 @@ public class UserServiceTest {
         verifyNoInteractions(userMapper);
     }
 
+
+    @Test
+    void shouldReturnUserByEmail() {
+        // Arrange
+        String email = "test@test.com";
+        long id = 1L;
+
+        User user = new User();
+        user.setId(id);
+        user.setEmail(email);
+
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+        // Act
+        User result = userService.getUserByEmail(email);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(user, result);
+
+        verify(userRepository).findByEmail(email);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserByEmailNotFound() {
+        // Arrange
+        String email = "test@test.com";
+
+        Long id = 1L;
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class,
+                () -> userService.getUserByEmail(email));
+
+        verify(userRepository).findByEmail(email);
+    }
+
 }
