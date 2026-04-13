@@ -1,6 +1,7 @@
 package com.example.demochatgpt.services;
 
 import java.util.List;
+import java.util.Set;
 
 import com.example.demochatgpt.dto.DetailedUserResponseDTO;
 import com.example.demochatgpt.dto.UserCreateRequestDTO;
@@ -10,6 +11,7 @@ import com.example.demochatgpt.exceptions.CredentialsNotValidException;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
 import com.example.demochatgpt.mapper.UserMapper;
+import com.example.demochatgpt.models.Role;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -22,11 +24,13 @@ import com.example.demochatgpt.repositories.UserRepository;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RoleService roleService;
     //private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, RoleService roleService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.roleService = roleService;
     }
 
     //Rest METHODS
@@ -48,6 +52,10 @@ public class UserService {
                 .orElseThrow( () -> new UserNotFoundException()));
     }
 
+    public User getUserByEmail(String email) throws UserNotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    }
+
     public User createUser(UserCreateRequestDTO rq) {
         if (userRepository.findByEmail(rq.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException();
@@ -56,6 +64,8 @@ public class UserService {
         try {
             user.setEmail(rq.getEmail());
             user.setPassword(rq.getPassword());
+            Role role = roleService.getRoleByName("USER");
+            user.setRoles(Set.of(role));
             return userRepository.save(user);
         }   catch (ConstraintViolationException ex) {
             throw new InvalidFieldsException("User fields are not valid");
