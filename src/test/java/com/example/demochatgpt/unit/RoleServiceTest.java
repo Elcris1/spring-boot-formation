@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,6 +99,34 @@ public class RoleServiceTest {
 
         verify(roleRepository).findRoleByName(name);
         verify(roleRepository, never()).save(any());
+    }
+
+    @Test
+    void getRoles_shouldReturnRolesList() {
+        List<Role> roles = List.of(new Role(), new Role());
+
+        when(roleRepository.findAll()).thenReturn(roles);
+
+        List<Role> res = roleService.getRoles();
+
+        assertNotNull(res);
+        assertEquals(res, roles);
+
+        verify(roleRepository).findAll();
+    }
+
+    @Test
+    void getRoles_shouldReturnEmptyRolesList_whenNoRoles() {
+        List<Role> roles = List.of();
+
+        when(roleRepository.findAll()).thenReturn(roles);
+
+        List<Role> res = roleService.getRoles();
+
+        assertNotNull(res);
+        assertEquals(res, roles);
+
+        verify(roleRepository).findAll();
     }
 
 
