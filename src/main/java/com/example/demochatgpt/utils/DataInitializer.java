@@ -16,30 +16,37 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initDatabase(UserRepository userRepository, RoleRepository roleRepository) {
         return args -> {
+
             var role1 = new Role();
             role1.setName("USER");
-
-            roleRepository.save(role1);
+            if (roleRepository.findRoleByName("USER").isEmpty()) {
+                roleRepository.save(role1);
+            }
 
             var role2 = new Role();
             role2.setName("ADMIN");
 
-            roleRepository.save(role2);
+            if(roleRepository.findRoleByName("ADMIN").isEmpty()) {
+                roleRepository.save(role2);
+            }
 
-            var admin = new User();
-            admin.setName("admin");
-            admin.setEmail("admin@email.com");
-            admin.setPassword("1234");
-            admin.setRoles(Set.of(role1, role2));
+            if (userRepository.findByEmail("admin@email.com").isEmpty()) {
+                var admin = new User();
+                admin.setName("admin");
+                admin.setEmail("admin@email.com");
+                admin.setPassword("1234");
+                admin.setRoles(Set.of(role1, role2));
+                userRepository.save(admin);
+            }
 
-            userRepository.save(admin);
-
-            var user = new User();
-            user.setName("user");
-            user.setEmail("user@email.com");
-            user.setPassword("1234");
-            user.setRoles(Set.of(role1));
-            userRepository.save(user);
+            if (userRepository.findByEmail("user@email.com").isEmpty()) {
+                var user = new User();
+                user.setName("user");
+                user.setEmail("user@email.com");
+                user.setPassword("1234");
+                user.setRoles(Set.of(role1));
+                userRepository.save(user);
+            }
 
         };
     }
