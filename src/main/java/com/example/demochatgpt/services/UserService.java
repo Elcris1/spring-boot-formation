@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.demochatgpt.dto.*;
-import com.example.demochatgpt.exceptions.CredentialsNotValidException;
 import com.example.demochatgpt.exceptions.InvalidFieldsException;
 import com.example.demochatgpt.exceptions.UserAlreadyExistsException;
 import com.example.demochatgpt.mapper.UserMapper;
