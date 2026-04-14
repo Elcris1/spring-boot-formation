@@ -27,8 +27,8 @@ public class RoleService {
         }
         Role newRole = new Role();
         newRole.setName(role.getName());
-        roleRepository.save(newRole);
-        return newRole;
+        return roleRepository.save(newRole);
+
     }
 
     public List<Role> getRoles() {

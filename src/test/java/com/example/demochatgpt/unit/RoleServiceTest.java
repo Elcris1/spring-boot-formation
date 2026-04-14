@@ -1,6 +1,6 @@
 package com.example.demochatgpt.unit;
 
-import com.example.demochatgpt.dto.UserResponseDTO;
+import com.example.demochatgpt.exceptions.RoleAlreadyExistsException;
 import com.example.demochatgpt.exceptions.RoleNotFoundException;
 import com.example.demochatgpt.models.Role;
 import com.example.demochatgpt.models.User;
@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class RoleServiceTest {
@@ -33,8 +33,6 @@ public class RoleServiceTest {
 
         Role role = new Role();
         role.setName(name);
-
-        UserResponseDTO dto = new UserResponseDTO();
 
         when(roleRepository.findRoleByName(name)).thenReturn(Optional.of(role));
 
@@ -53,8 +51,6 @@ public class RoleServiceTest {
         // Arrange
         String name = "ROLE";
 
-        UserResponseDTO dto = new UserResponseDTO();
-
         when(roleRepository.findRoleByName(name)).thenReturn(Optional.empty());
 
         assertThrows(RoleNotFoundException.class,
@@ -62,4 +58,47 @@ public class RoleServiceTest {
 
         verify(roleRepository).findRoleByName(name);
     }
+
+    @Test
+    void createRole_shouldCreateRole() {
+        // Arrange
+        String name = "ROLE";
+
+        Role role = new Role();
+        role.setName(name);
+
+        when(roleRepository.findRoleByName(name)).thenReturn(Optional.empty());
+        when(roleRepository.save(any(Role.class))).thenReturn(role);
+
+        // Act
+        Role result = roleService.createRole(role);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(role, result);
+
+        verify(roleRepository).findRoleByName(name);
+        verify(roleRepository).save(any(Role.class));
+    }
+
+
+    @Test
+    void createRole_shouldThrowRoleAlreadyExists_whenRoleExists() {
+        // Arrange
+        String name = "ROLE";
+
+        Role role = new Role();
+        role.setName(name);
+
+        when(roleRepository.findRoleByName(name)).thenReturn(Optional.of(role));
+
+        // Act
+        assertThrows(RoleAlreadyExistsException.class,
+                () -> roleService.createRole(role));
+
+        verify(roleRepository).findRoleByName(name);
+        verify(roleRepository, never()).save(any());
+    }
+
+
 }
